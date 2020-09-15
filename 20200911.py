@@ -292,4 +292,3 @@ df1.drop_duplicates('col1', keep='last')          # 두 번째 값 남김
 df1.drop_duplicates('col1', keep=False)           # 중복 값 모두 제거
 
 df1.drop_duplicates(['col1','col2'], keep=False)  # 여러 컬럼 전달 가능
-
