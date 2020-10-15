@@ -61,7 +61,7 @@ with open("tree.dot", encoding='UTF8') as f:
 g1 = graphviz.Source(dot_graph)
 g1.render('a1', cleanup=True) 
 
-########## ##########
+########## 여기까지는 복습입니다. ##########
 
 # RF(iris data) in python
 # 1. 데이터 로딩
