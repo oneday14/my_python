@@ -22,7 +22,7 @@ df_iris = load_iris()
 
 train_x, test_x, train_y, test_y = train_test_split(df_iris.data, 
                                                     df_iris.target, 
-                                                    random_state=99)
+                                                    random_state=0)
 # 2. 모델 생성 및 학습
 from sklearn.ensemble import GradientBoostingClassifier as gb
 from sklearn.ensemble import GradientBoostingRegressor as gb_r
@@ -202,11 +202,24 @@ x1 x2 x3    x1^2  x2^2  x3^2  x1x2  x1x3  x2x3
 
 m_poly = poly(degree=2)
 m_poly.fit(train_x)         # 각 설명변수에 대한 2차항 모델 생성
-m_poly.transform(train_x)   # 각 설명변수에 대한 2차항 모델 생성
+train_x_poly = m_poly.transform(train_x)   # 각 설명변수에 대한 2차항 모델 생성
+test_x_poly  = m_poly.transform(test_x) 
 
 m_poly.get_feature_names()                       # 변경된 설명변수들의 형태 확인
-m_poly.get_feature_names(df_iris.feature_names)  # 실제 컬럼이름의 교호작용 출력
+col_poly = m_poly.get_feature_names(df_iris.feature_names)  # 실제 컬럼이름의 교호작용 출력
  
 DataFrame(m_poly.transform(train_x) , 
           columns = m_poly.get_feature_names(df_iris.feature_names))
+
+# 2. 확장된 데이터셋을 RF에 학습, feature importance 확인
+m_rf = rf(random_state=0)
+m_rf.fit(train_x_poly, train_y)
+   
+m_rf.score(test_x_poly, test_y)   # 0.973   
+   
+s1 = Series(m_rf.feature_importances_ , index = col_poly)
+s1.sort_values(ascending=False)   
+
+
+
 
