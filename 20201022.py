@@ -86,19 +86,19 @@ m_knn.fit(train_x, train_y)
 m_knn.score(test_x, test_y)   # 19.38
 
 v_pre = m_knn.predict(test_x[0].reshape(1, -1))   # 2차원 형식으로 전달
-people.target_names[v_pre][0]   # 예측 값
-people.target_names[test_y[0]]  # 실제 값
+v_pre = v_pre[0] # 차원 축소를 위한 색인(값만 추출)
+y_pre = people.target_names[v_pre]      # 예측 값
+y_val = people.target_names[test_y[0]]  # 실제 값
 
 # 5. 예측값과 실제값의 시각화
-fig, ax = plt.subplots(1,2, figsize=(15,8))
-ax[0].imshow(test_x[0].reshape(87,65))
-ax[1].imshow(people.images[people.target == 23][0])
-
-
 plt.rc('font',family='Malgun Gothic')
 
-ax[0].set_title('예측값 : Colin Powell')
-ax[1].set_title('실제값 : Jack Straw')
+fig, ax = plt.subplots(1,2, figsize=(15,8))
+ax[0].imshow(test_x[0].reshape(87,65))               # 실제값
+ax[1].imshow(people.images[people.target == v_pre][0])  # 실제값
+
+ax[0].set_title('예측값 : ' + y_pre)
+ax[1].set_title('실제값 : ' + y_val)
 
 
 # 6. 기타 튜닝
