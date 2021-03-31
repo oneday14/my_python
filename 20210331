@@ -1,0 +1,29 @@
+# 셀레니움 설치
+!pip install selenium
+
+# 라이브러리 불러오기           
+from selenium import webdriver
+from bs4 import BeautifulSoup
+
+# 웹페이지 접속
+browser =  webdriver.Chrome('C:/informs/chromedriver.exe')
+url = 'https://www.melon.com/chart/index.htm'
+browser.get(url)
+browser.implicitly_wait(3)      # 최대 3초 대기
+
+# 소스 읽어오기
+html = browser.page_source
+print(html)
+soup = BeautifulSoup(html, 'lxml')
+
+# 노래 차트 가져오기
+songs = soup.select('div.ellipsis.rank01 > span > a')
+owner = soup.select('div.ellipsis.rank02 > a')
+songs[0]
+owner[0]
+
+# 순수 노래 제목만 가져오기
+for i, j, z in zip(songs, owner, range(1, 101)) :
+    title = i.text
+    singer = j.text
+    print(title,'을 부른 가수는', singer, '이고,', z, '순위곡 입니다.', end = '\n')
