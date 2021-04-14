@@ -38,3 +38,11 @@ df = pd.DataFrame({'number': lst_num, 'thumb': lst_sym})
 
 # csv파일로 저장
 df.to_csv('okky크롤링.csv', index = False, encoding = 'cp949')
+
+from pandas import *
+
+# 추천 수가 음수가 아닌 경우만 추출(음수일 경우 광고일 가능성이 크기때문)
+df = df[df.thumb >= 0]
+df.number = Series(list(map(lambda x : x.replace('#',''), df.number)))
+
+
