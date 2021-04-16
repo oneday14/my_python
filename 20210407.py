@@ -10,7 +10,7 @@ lst_sym = []
 for i in range(0, 461, 20) :
     url = 'https://okky.kr/articles/community?query=%EA%B0%95%EC%9D%98&offset='+ str(i) +'&max=20&sort=id&order=desc'
     browser.get(url)
-    browser.implicitly_wait(5)      # 최대 3초 대기
+    browser.implicitly_wait(5)      # 최대 5초 대기
 
     # 소스 읽어오기
     html = browser.page_source
@@ -36,13 +36,40 @@ lst_num
 import pandas as pd
 df = pd.DataFrame({'number': lst_num, 'thumb': lst_sym})
 
-# csv파일로 저장
-df.to_csv('okky크롤링.csv', index = False, encoding = 'cp949')
-
 from pandas import *
 
 # 추천 수가 음수가 아닌 경우만 추출(음수일 경우 광고일 가능성이 크기때문)
 df = df[df.thumb >= 0]
 df.number = Series(list(map(lambda x : x.replace('#',''), df.number)))
 
+# 각 페이지의 내용 긁어오기
+lst_con = []
+for i in df.number :
+    url = 'https://okky.kr/article/'+ str(i)
+    browser.get(url)
+    browser.implicitly_wait(5)     
 
+    # 소스 읽어오기
+    html = browser.page_source
+    soup = BeautifulSoup(html, 'lxml')
+
+    con = soup.select('article.content-text > p')
+    
+    content = ''
+    for j in con :
+        content += j.text
+
+    lst_con.append(content)
+    
+# 새로운 칼럼 추가
+df['content'] = Series(lst_con)
+
+# 이모티콘 및 특수기호 제거
+import re
+r1 = re.compile('[a-zA-Z가-힣0-9]+[a-zA-Z가-힣0-9]', flags = re.IGNORECASE)
+
+# 순수한 내용 칼럼 추가
+df['pure_content'] = Series([' '.join(i) for i in df.content.str.findall(r1)])
+
+# csv파일 
+df.to_csv('okky크롤링.csv', index = False, encoding='utf-8-sig')
