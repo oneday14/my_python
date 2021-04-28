@@ -73,3 +73,54 @@ df['pure_content'] = Series([' '.join(i) for i in df.content.str.findall(r1)])
 
 # csv파일 
 df.to_csv('okky크롤링.csv', index = False, encoding='utf-8-sig')
+
+-----
+# 단어추출
+import pandas as pd
+from pandas import *
+
+import re
+
+df = pd.read_csv('okky크롤링.csv')
+
+con = df.content
+
+# 영어, 한글 구분해서 추출
+eng = '[^a-zA-Z ]'
+kor = '[^가-힣 ]'\
+
+lst_eng = []
+lst_kor = []
+
+for i in con :
+    result1 = re.sub(eng, '', str(i)).strip()
+    result2 = re.sub(kor, '', str(i)).strip()
+    lst_eng.append(result1)
+    lst_kor.append(result2)
+    
+# 영어 토큰화
+eng_token = list(map(lambda x : unique(x.split(' ')), lst_eng))
+
+lst_eng_pure = []
+for i in eng_token :
+    for j in i :
+        if j == '' :
+            pass
+        else :
+            lst_eng_pure.append(j.lower())
+            
+# 영어 카운트
+eng_word = []
+eng_cnt = []
+
+for i in lst_eng_pure :
+    if i not in eng_word :
+        eng_word.append(i)
+        eng_cnt.append(1)
+    else :
+        eng_cnt[eng_word.index(i)] += 1
+        
+# 데이터 프레임 만들기
+df2 = pd.DataFrame({'eng_word' : eng_word, 'eng_cnt' : eng_cnt})
+df2.sort_values('eng_cnt', ascending = False)
+
